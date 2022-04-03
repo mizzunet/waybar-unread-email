@@ -2,6 +2,8 @@
 A simple script to print unread emails count and suitable to use as Waybar module
 
 ## Usage
+Copy `unread-count` to `PATH`
+
 ```
 usage: unread-count [-h] -u USERNAME -p PASSWORD -S SERVER -P PORT
 
