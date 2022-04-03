@@ -1,4 +1,4 @@
-module unread
+module unread-count
 
 go 1.18
 

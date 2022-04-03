@@ -5,15 +5,13 @@ A simple script to print unread emails count and suitable to use as Waybar modul
 
 ## Usage
 ```
-usage: unread-count [-h] -u USERNAME -p PASSWORD -S SERVER -P PORT
-
-options:
-  -h, --help            show this help message and exit
-  -u USERNAME, --username USERNAME
-  -p PASSWORD, --password PASSWORD
-  -S SERVER, --server SERVER
-  -P PORT, --port PORT
-
+Usage of ./unread-count:
+  -P string
+    	Password
+  -S string
+    	Server
+  -U string
+    	Username
 ```
 
 ## Install
