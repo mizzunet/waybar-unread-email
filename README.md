@@ -6,6 +6,8 @@ A simple script to print unread emails count and suitable to use as Waybar modul
 ## Usage
 ```
 Usage of ./unread-count:
+  -I string
+    	Icon (default "\U000f05f0")
   -P string
     	Password
   -S string
