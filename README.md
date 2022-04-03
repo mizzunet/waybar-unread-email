@@ -27,7 +27,7 @@ Copy `unread-count` to `PATH`
 "modules-left": ["custom/unreadcount"],
 
     "custom/unreadcount": {
-        "exec": "unread-count -u user -p pass -S 127.0.0.1 -P 1143",
+        "exec": "unread-count -U user -P pass -S 127.0.0.1:1143",
         "return-type": "json",
         "interval": 30,
         "format": "{}",
