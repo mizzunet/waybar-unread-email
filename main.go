@@ -12,15 +12,18 @@ var (
     SERVER *string
     USER *string
     PASS *string
+    ICON *string
 )
 func init() {
     SERVER   = flag.String("S","","Server")
     USER     = flag.String("U","","Username")
     PASS     = flag.String("P","","Password")
+    ICON     = flag.String("I","󰗰","Icon")
+
 }
 
 func main() {
-    const ICON_UNREAD="󰗰"
+    //const ICON_UNREAD="󰗰"
 
     flag.Parse()
 
@@ -57,7 +60,7 @@ func main() {
     }
 
     if len(COUNT) > 0 {
-    fmt.Println(`{"text":" `,len(COUNT), ICON_UNREAD ,`", "class": ["unread"]}` )
+    fmt.Println(`{"text":" `,len(COUNT), ICON ,`", "class": ["unread"]}` )
     } else {
         os.Exit(0)
     }
