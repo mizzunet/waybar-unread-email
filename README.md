@@ -3,9 +3,13 @@ A simple script to print unread emails count and suitable to use as Waybar modul
 
 ![image](https://user-images.githubusercontent.com/10193999/161427391-244b302a-5bea-4ed5-88c6-42eace75f568.png)
 
+## Install
+
+Copy `unread-count` to `PATH`
+
 ## Usage
 ```
-Usage of ./unread-count:
+Usage of unread-count:
   -I string
     	Icon (default "\U000f05f0")
   -P string
@@ -15,10 +19,6 @@ Usage of ./unread-count:
   -U string
     	Username
 ```
-
-## Install
-
-Copy `unread-count` to `PATH`
 
 ## Waybar config
 ```
