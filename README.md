@@ -4,8 +4,6 @@ A simple script to print unread emails count and suitable to use as Waybar modul
 ![image](https://user-images.githubusercontent.com/10193999/161427391-244b302a-5bea-4ed5-88c6-42eace75f568.png)
 
 ## Usage
-Copy `unread-count` to `PATH`
-
 ```
 usage: unread-count [-h] -u USERNAME -p PASSWORD -S SERVER -P PORT
 
@@ -17,6 +15,11 @@ options:
   -P PORT, --port PORT
 
 ```
+
+## Install
+`python-imaplib2` required as a dependency.
+
+Copy `unread-count` to `PATH`
 
 ## Waybar config
 ```
