@@ -2,7 +2,7 @@ package main
 
 import (
     "os"
-	"log"
+//	"log"
 	"github.com/emersion/go-imap/client"
 	"github.com/emersion/go-imap"
     "flag"
@@ -27,17 +27,23 @@ func main() {
 	// Connect to server
 	c, err := client.Dial(*SERVER)
 	if err != nil {
-		log.Fatal(err)
+//		log.Fatal(err)
+        fmt.Println(err)
+        os.Exit(0)
 	}
     
 	// Login
 	if err := c.Login(*USER, *PASS); err != nil {
-		log.Fatal(err)
+//		log.Fatal(err)
+        fmt.Println(err)
+        os.Exit(0)
 	}
 
     _, err = c.Select("INBOX", false)
     if err !=nil {
-        log.Fatal(err)
+//      log.Fatal(err)
+        fmt.Println(err)
+        os.Exit(0)
     }
 
     // Set search criteria
@@ -45,7 +51,9 @@ func main() {
     criteria.WithoutFlags = []string{imap.SeenFlag}
     COUNT, err := c.Search(criteria)
     if err != nil {
-        log.Fatal(err)
+//     log.Fatal(err)
+        fmt.Println(err)
+        os.Exit(0)
     }
 
     if len(COUNT) > 0 {

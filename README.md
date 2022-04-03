@@ -15,7 +15,6 @@ Usage of ./unread-count:
 ```
 
 ## Install
-`python-imaplib2` required as a dependency.
 
 Copy `unread-count` to `PATH`
 
