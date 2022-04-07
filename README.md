@@ -37,3 +37,5 @@ Usage of unread-count:
 }
 ```
 
+## Libraries
+[go-imap](https://github.com/emersion/go-imap)
