@@ -63,7 +63,7 @@ func main() {
 		printAndExit()
 	}
 
-	yaml.Unmarshal(content, Cfg)
+	err = yaml.Unmarshal(content, Cfg)
 	if err != nil {
 		Errors = append(Errors, fmt.Sprintf("error unmarshaling config file: %v", err))
 		printAndExit()
@@ -117,13 +117,13 @@ func main() {
 		Tooltips = append(Tooltips, fmt.Sprintf("%s: %d unread", srv.Name, count))
 		TotalUnread += count
 	}
-	Tooltips = append(Tooltips, Errors...)
 
 	printAndExit()
 }
 
 func printAndExit() {
 	wbOut := &WaybarOutput{}
+	wbOut.Tooltip = strings.Join(append(Tooltips, Errors...), "\n")
 	if TotalUnread > 0 {
 		wbOut.Text = strconv.Itoa(TotalUnread)
 		wbOut.Class = []string{"unread"}
@@ -133,8 +133,8 @@ func printAndExit() {
 	}
 	if len(Errors) > 0 {
 		wbOut.Class = append(wbOut.Class, "error")
+		os.Stderr.WriteString(strings.Join(Errors, "\n") + "\n")
 	}
-	wbOut.Tooltip = strings.Join(Tooltips, "\n")
 
 	out := ""
 	switch strings.ToLower(OutputFmt) {
