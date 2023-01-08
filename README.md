@@ -28,7 +28,7 @@ Usage of waybar-unread-email:
 
 ### JSON (default)
 
-```json
+```jsonc
 // 3 unread messages
 {
   "text": "3",
@@ -38,7 +38,7 @@ Usage of waybar-unread-email:
 }
 ```
 
-```json
+```jsonc
 // 0 unread messages, showZero: false
 {
   "text": "",
@@ -47,7 +47,7 @@ Usage of waybar-unread-email:
 }
 ```
 
-```json
+```jsonc
 // 0 unread messages, showZero: true
 {
   "text": "0",
