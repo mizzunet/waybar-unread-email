@@ -89,19 +89,19 @@ servers:
     address: localhost:1143
     username: road.runner@pm.me
     password: isecretlylovewile
-    security: STARTTLS
+    encryption: STARTTLS
     skipVerify: true
   - name: GMail
     address: imap.gmail.com:993
     username: wile.e.coyote@gmail.com
     password: RocketShoes!!
-    security: TLS
+    encryption: TLS
     skipVerify: false
   - name: Outlook
     address: outlook.office365.com:993
     username: bugs.bunnye@outlook.com
     password: password123
-    security: TLS
+    encryption: TLS
     skipVerify: false
 ```
 
@@ -120,7 +120,7 @@ servers:
     "on-click": "geary",
     "on-click-right": "waybar-unread-email",
     "format": "{icon}{}",
-    "format-icons": ["", "﫮"]
+    "format-icons": ["﫮", ""]
   }
 }
 ```

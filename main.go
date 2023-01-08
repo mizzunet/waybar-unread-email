@@ -29,74 +29,79 @@ type ServerConfig struct {
 }
 
 type WaybarOutput struct {
-	Text       string `json:"text"`
-	Tooltip    string `json:"tooltip,omitempty"`
-	Class      string `json:"class,omitempty"`
-	Percentage int    `json:"percentage"`
+	Text       string   `json:"text"`
+	Tooltip    string   `json:"tooltip,omitempty"`
+	Class      []string `json:"class,omitempty"`
+	Percentage int      `json:"percentage"`
 }
+
+var (
+	OutputFmt string
+
+	TotalUnread int
+	Tooltips    []string
+	Errors      []string
+
+	Cfg = &Config{}
+)
 
 func main() {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		fmt.Printf("error finding user's home directory: %v", err)
-		os.Exit(1)
+		Errors = append(Errors, fmt.Sprintf("error finding user's home directory: %v", err))
+		printAndExit()
 	}
 
-	var confPath, outputFmt string
+	var confPath string
 	flag.StringVar(&confPath, "config", homeDir+"/.config/waybar-unread-email/config.yaml", "path to YAML file containing configuration")
-	flag.StringVar(&outputFmt, "output", "json", "output format, one of: \"json\", \"yaml\", \"num\"")
+	flag.StringVar(&OutputFmt, "output", "json", "output format, one of: \"json\", \"yaml\", \"num\"")
 	flag.Parse()
 
 	content, err := os.ReadFile(confPath)
 	if err != nil {
-		fmt.Printf("error reading config file: %v", err)
-		os.Exit(1)
+		Errors = append(Errors, fmt.Sprintf("error reading config file: %v", err))
+		printAndExit()
 	}
 
-	config := &Config{}
-	yaml.Unmarshal(content, config)
+	yaml.Unmarshal(content, Cfg)
 	if err != nil {
-		fmt.Printf("error unmarshaling config file: %v", err)
-		os.Exit(1)
+		Errors = append(Errors, fmt.Sprintf("error unmarshaling config file: %v", err))
+		printAndExit()
 	}
 
-	tooltips := []string{}
-	totalUnread := 0
-	for _, srv := range config.Servers {
-		enc := strings.ToLower(srv.Encryption)
-		if enc == "" {
-			enc = "no"
-		}
-
+	for _, srv := range Cfg.Servers {
 		var err error
 		var imapClt *client.Client
+		enc := strings.ToLower(srv.Encryption)
+
 		if enc == "tls" {
 			imapClt, err = client.DialTLS(srv.Address, &tls.Config{InsecureSkipVerify: srv.SkipVerify})
 		} else {
 			imapClt, err = client.Dial(srv.Address)
 		}
 		if err != nil {
-			fmt.Printf("error dialing server '%s': %v", srv.Name, err)
-			os.Exit(1)
-		}
-		if enc == "starttls" {
-			err = imapClt.StartTLS(&tls.Config{InsecureSkipVerify: srv.SkipVerify})
-			if err != nil {
-				fmt.Printf("error dialing server '%s': %v", srv.Name, err)
-				os.Exit(1)
-			}
+			Errors = append(Errors, fmt.Sprintf("error dialing server '%s': %v", srv.Name, err))
+			continue
 		}
 		defer imapClt.Logout()
 
+		if enc == "starttls" {
+			err = imapClt.StartTLS(&tls.Config{InsecureSkipVerify: srv.SkipVerify})
+			if err != nil {
+				Errors = append(Errors, fmt.Sprintf("error starting TLS for server '%s': %v", srv.Name, err))
+				continue
+			}
+		}
+
 		if err := imapClt.Login(srv.Username, srv.Password); err != nil {
-			fmt.Printf("error logging into server '%s': %v", srv.Name, err)
-			os.Exit(1)
+			Errors = append(Errors, fmt.Sprintf("error logging into server '%s': %v", srv.Name, err))
+			continue
 		}
 
 		_, err = imapClt.Select("INBOX", true)
 		if err != nil {
-			fmt.Printf("error selecting INBOX on server '%s': %v", srv.Name, err)
-			os.Exit(1)
+			Errors = append(Errors, fmt.Sprintf("error selecting INBOX on server '%s': %v", srv.Name, err))
+			continue
 		}
 
 		// Criteria for unread emails.
@@ -104,26 +109,35 @@ func main() {
 		criteria.WithoutFlags = []string{imap.SeenFlag}
 		seqNums, err := imapClt.Search(criteria)
 		if err != nil {
-			fmt.Printf("error searching INBOX for unread messages on server '%s': %v", srv.Name, err)
-			os.Exit(1)
+			Errors = append(Errors, fmt.Sprintf("error searching INBOX on server '%s': %v", srv.Name, err))
+			continue
 		}
 
 		count := len(seqNums)
-		tooltips = append(tooltips, fmt.Sprintf("%s: %d unread", srv.Name, count))
-		totalUnread += count
+		Tooltips = append(Tooltips, fmt.Sprintf("%s: %d unread", srv.Name, count))
+		TotalUnread += count
 	}
+	Tooltips = append(Tooltips, Errors...)
 
-	wbOut := &WaybarOutput{Tooltip: strings.Join(tooltips, "\n")}
-	if totalUnread > 0 {
-		wbOut.Text = strconv.Itoa(totalUnread)
-		wbOut.Class = "unread"
+	printAndExit()
+}
+
+func printAndExit() {
+	wbOut := &WaybarOutput{}
+	if TotalUnread > 0 {
+		wbOut.Text = strconv.Itoa(TotalUnread)
+		wbOut.Class = []string{"unread"}
 		wbOut.Percentage = 100
-	} else if config.ShowZero {
+	} else if Cfg.ShowZero {
 		wbOut.Text = "0"
 	}
+	if len(Errors) > 0 {
+		wbOut.Class = append(wbOut.Class, "error")
+	}
+	wbOut.Tooltip = strings.Join(Tooltips, "\n")
 
 	out := ""
-	switch strings.ToLower(outputFmt) {
+	switch strings.ToLower(OutputFmt) {
 	case "num":
 		out = wbOut.Text
 	case "yaml":
